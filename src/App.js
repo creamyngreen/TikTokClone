@@ -63,29 +63,30 @@ const videoUrls = [
 
 function App() {
   const [videos, setVideos] = useState([]);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const videoRefs = useRef([]);
+  const containerRef = useRef(null);
+  const mouseStartY = useRef(null);
 
   useEffect(() => {
     setVideos(videoUrls);
   }, []);
 
+  // Autoplay or pause based on intersection
   useEffect(() => {
     const observerOptions = {
       root: null,
       rootMargin: "0px",
-      threshold: 0.8, // Adjust this value to change the scroll trigger point
+      threshold: 0.8,
     };
 
-    // This function handles the intersection of videos
     const handleIntersection = (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          const videoElement = entry.target;
-          videoElement.play();
+          entry.target.play();
         } else {
-          const videoElement = entry.target;
-          videoElement.pause();
+          entry.target.pause();
         }
       });
     };
@@ -95,51 +96,84 @@ function App() {
       observerOptions
     );
 
-    // We observe each video reference to trigger play/pause
     videoRefs.current.forEach((videoRef) => {
       observer.observe(videoRef);
     });
 
-    // We disconnect the observer when the component is unmounted
     return () => {
       observer.disconnect();
     };
   }, [videos]);
 
-  // This function handles the reference of each video
   const handleVideoRef = (index) => (ref) => {
     videoRefs.current[index] = ref;
   };
 
+  // Handle mouse interactions for video navigation
+  const handleMouseDown = (event) => {
+    mouseStartY.current = event.clientY;
+  };
+
+  const handleMouseUp = (event) => {
+    const diffY = event.clientY - mouseStartY.current;
+
+    if (Math.abs(diffY) > 50) { // Threshold for detecting swipe
+      if (diffY > 0 && currentVideoIndex > 0) {
+        setCurrentVideoIndex((prevIndex) => prevIndex - 1); // Navigate to previous video
+      } else if (diffY < 0 && currentVideoIndex < videos.length - 1) {
+        setCurrentVideoIndex((prevIndex) => prevIndex + 1); // Navigate to next video
+      }
+    }
+  };
+
+  useEffect(() => {
+    // Scroll to the current video
+    const currentVideo = videoRefs.current[currentVideoIndex];
+    if (currentVideo) {
+      currentVideo.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [currentVideoIndex]);
+
   return (
-    <BrowserRouter>
-      <div className="app">
+  <BrowserRouter>
+      <div className="app"
+      ref={containerRef}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      >
         <div className="container">
-          <TopNavbar className="top-navbar" setSearchTerm={setSearchTerm} />
           <Routes>
-            <Route path="/user-profile" element={<UserProfile profilePic={profile} />} />
-            <Route path="/" element={
-              // Filter videos based on search term
-              videos
-                .filter(video => video.description.includes(searchTerm))
-                .map((video, index) => (
-                  <VideoCard
-                    key={index}
-                    username={video.username}
-                    description={video.description}
-                    song={video.song}
-                    likes={video.likes}
-                    saves={video.saves}
-                    comments={video.comments}
-                    shares={video.shares}
-                    url={video.url}
-                    profilePic={profile}
-                    setVideoRef={handleVideoRef(index)}
-                    autoplay={index === 0}
-                    videoUrl={video.url}
-                  />
-                ))
-            } />
+            <Route
+              path="/"
+              element={
+                <>
+                  <TopNavbar className="top-navbar" setSearchTerm={setSearchTerm} />
+                  {videos
+                    .filter((video) => video.description.includes(searchTerm))
+                    .map((video, index) => (
+                      <VideoCard
+                        key={index}
+                        username={video.username}
+                        description={video.description}
+                        song={video.song}
+                        likes={video.likes}
+                        saves={video.saves}
+                        comments={video.comments}
+                        shares={video.shares}
+                        url={video.url}
+                        profilePic={profile}
+                        setVideoRef={handleVideoRef(index)}
+                        autoplay={index === 0}
+                        videoUrl={video.url}
+                      />
+                    ))}
+                </>
+              }
+            />
+            <Route
+              path="/user-profile"
+              element={<UserProfile profilePic={profile} />}
+            />
           </Routes>
           <BottomNavbar className="bottom-navbar" />
         </div>

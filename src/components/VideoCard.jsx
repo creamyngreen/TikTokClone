@@ -28,6 +28,7 @@ const VideoCard = (props) => {
       videoRef.current.muted = !isMuted;
     }
   };
+  
 
   return (
     <div className="video">
@@ -47,8 +48,16 @@ const VideoCard = (props) => {
           <FooterLeft username={username} description={description} song={song}/>
         </div>
         <div className="footer-right">
-          <FooterRight likes={likes} shares={shares} comments={comments} saves={saves} profilePic={profilePic} onMuteToggle={handleMuteToggle} isMuted={isMuted} videoUrl={videoUrl}/>
-          
+          <FooterRight 
+            likes={likes} 
+            shares={shares} 
+            comments={comments} 
+            saves={saves} 
+            profilePic={profilePic} 
+            onMuteToggle={handleMuteToggle} 
+            isMuted={isMuted} 
+            videoUrl={videoUrl}
+          />
         </div>
       </div>
     </div>

@@ -7,7 +7,7 @@ import { faFacebook, faInstagram, faThreads } from '@fortawesome/free-brands-svg
 
 import './FooterRight.css';
 
-function FooterRight({ likes, comments, saves, shares, profilePic, videoUrl }) {
+function FooterRight({ likes, shares, comments, saves, profilePic, onMuteToggle, isMuted, videoUrl }) {
   const navigate = useNavigate();
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -55,6 +55,10 @@ function FooterRight({ likes, comments, saves, shares, profilePic, videoUrl }) {
 
   const closeSharePopup = () => {
     setSharePopupVisible(false);
+  };
+
+  const handleMuteClick = () => {
+    onMuteToggle(); // Call the function passed from VideoCard
   };
 
   return (
@@ -117,7 +121,18 @@ function FooterRight({ likes, comments, saves, shares, profilePic, videoUrl }) {
         />
         {/*Display the number of shares */}
         <p>{shares}</p>
-      </div>l
+      </div>
+
+      <div className='sidebar-icon'>
+        <button onClick={handleMuteClick} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+            <FontAwesomeIcon 
+              icon={isMuted ? faVolumeMute : faVolumeUp} 
+              color={isMuted ? 'red' : 'white'} 
+              style={{ width: '30px', height: '30px' }}
+            />
+          </button>
+      </div>
+
       <div className='sidebar-icon record'>
         {/*Display the record icon*/}
         <img src="https://static.thenounproject.com/png/934821-200.png" alt='Record icon'/>

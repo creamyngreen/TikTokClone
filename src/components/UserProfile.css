@@ -5,6 +5,19 @@
   text-align: center;
 }
 
+.profile-topbar{
+  display: flex;
+  justify-content: center;
+}
+
+.setting-button{
+  background-color: #000;
+  color: #fff;
+  border: black solid ;
+  margin-left: 10px;
+  margin-top: 8px;
+  
+}
 
 .order-icon{
     background-color: #000;
@@ -102,6 +115,7 @@
   width: 25px;
   height: 25px;
   bottom: 490px;
+  top: 160px;
   background-color: rgb(115, 255, 236);
   border-radius: 50%;
   display: flex;

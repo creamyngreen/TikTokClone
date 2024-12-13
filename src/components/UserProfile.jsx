@@ -17,6 +17,12 @@ import { faImages } from "@fortawesome/free-regular-svg-icons";
 const UserProfile = ({ profilePic }) => {
   return (
     <div className="user-profile">
+      <div className="profile-topbar">
+        <h3 className="topbar-title">Hồ sơ của bạn</h3>
+        <button className="setting-button">
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+      </div>
       <div className="profile-header">
         <img src={profilePic} alt="Profile" className="profile-pic" />
         <div className="plus-icon-container">
